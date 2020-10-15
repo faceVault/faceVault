@@ -1,5 +1,6 @@
 from flask import Flask, render_template, json, request
 from bson import json_util
+import sqlite3 as sql
 app = Flask(__name__)
 
 class Response:
@@ -41,11 +42,23 @@ def getResponseData(code):
 def hello_world():
   return Response(200, "hello, world!").serialize()
 
-@app.route('/signUp', methods=['POST'])
+@app.route('/signUp', methods=['GET', 'POST'])
 def signUp():
-  document = request.form.to_dict()
-  #add object to db here 
+  if request.method == 'POST':
+    document = request.form.to_dict()
+
+
+
+    # Setting up connection to DB
+    with sql.connect("vault.db") as con:
+      cur = con.cursor()
+
+      cur.execute("INSERT INTO User (Email, Password) VALUES (?,?)", (document['email'], document['password']))
+
+
   return Response(200, document['email'] + " " + document['password']).serialize()
+  
+  
 
 if __name__ == '__main__':
   app.run(host="localhost", port=5000, debug=True)

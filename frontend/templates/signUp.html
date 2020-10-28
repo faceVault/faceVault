@@ -1,3 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block navbar %}<!--no links for singup-->{% endblock %}
+
+{% block content %}
 <form action="http://localhost:5000/signUp" method="post" style="border:1px solid #ccc">
   <div class="container">
     <h1>Sign Up</h1>
@@ -19,3 +26,4 @@
     </div>
   </div>
 </form>
+{% endblock %} <!--end content-->

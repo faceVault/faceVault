@@ -4,19 +4,20 @@
     {% block head %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block style %}{% endblock %}
     <title>{% block title %}{% endblock %}</title>
     {% endblock %}
 </head>
 <body>
-    <div id="navbar">
-        {% block navbar %}
-        {% endblock %}
+    {% block navbar %}
+    <div id=navbar>
+        <a href="index">Home</a>
+        <a href="upload">Upload Documents</a>
+        <a href="view">View Documents</a>
+        <a href="profile">Profile</a>
     </div>
-    
-    <div id="content">
-        {% block content %}
-        {% endblock %}
-    </div>
-    
+    {% endblock %}
+
+    <div id="content">{% block content %}{% endblock %}</div>
 </body>
 </html>

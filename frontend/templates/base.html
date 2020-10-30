@@ -5,23 +5,21 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block style %}
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/litera.min.css') }}"> 
     {% endblock %}
         <title>{% block title %}{% endblock %}</title>
     {% endblock %}
 </head>
 <body>
-    <div class="container">
-        {% block navbar %}
-            <div id=navbar>
-                <a href="index">Home</a>
-                <a href="upload">Upload Documents</a>
-                <a href="view">View Documents</a>
-                <a href="profile">Profile</a>
-            </div>
-        {% endblock %}
-
-        <div id="content">{% block content %}{% endblock %}</div>
+    {% block navbar %}
+        <div class="navbar navbar-light bg-light static-top">
+            <a href="index">Home</a>
+            <a href="upload">Upload Documents</a>
+            <a href="view">View Documents</a>
+            <a href="profile">Profile</a>
         </div>
+    {% endblock %}
+
+    <div id="content">{% block content %}{% endblock %}</div><!--end content-->
 </body>
 </html>

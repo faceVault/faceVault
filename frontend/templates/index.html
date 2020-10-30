@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-
+{% block style %}{{ super() }}{% endblock %}
 {% block title %}Home Page{% endblock %}
 
 {% block navbar %}{{ super() }}{% endblock %}
 
 {% block content %}
-
+    <h1>Hi, "user"!</h1>
 {% endblock %} <!--end content-->

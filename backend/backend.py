@@ -47,8 +47,6 @@ def signUp():
   if request.method == 'POST':
     document = request.form.to_dict()
 
-
-
     # Setting up connection to DB
     with sql.connect("vault.db") as con:
       cur = con.cursor()
@@ -58,6 +56,9 @@ def signUp():
 
   return Response(200, document['email'] + " " + document['password']).serialize()
   
+@app.route('/signIn', methods=['GET', 'POST'])
+def signIn():
+  return Response(200, "TODO")
   
 
 if __name__ == '__main__':

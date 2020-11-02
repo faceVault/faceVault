@@ -3,16 +3,20 @@ from flask_bootstrap import Bootstrap
 app = Flask(__name__)
 
 @app.route('/')
-def hello_world():
-  return render_template('hello.html')
+def index():
+  return render_template('index.html')
 
 @app.route('/signUp')
 def signUp():
   return render_template('signUp.html')
 
-@app.route('/index')
+@app.route('/signIn')
+def signIn():
+  return render_template('signIn.html')
+
+@app.route('/home')
 def home():
-    return render_template('index.html')
+  return render_template('home.html')
 
 @app.route('/upload')
 def upload():

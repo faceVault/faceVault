@@ -1,9 +1,71 @@
 {% extends "base.html" %}
+<!--landing page that redirects for signup or login-->
+{% block style %}        
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}"> 
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing-page.css') }}">
 
-{% block title %}Home Page{% endblock %}
+<!--fonts-->
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}"> 
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/simple-line-icons/css/simple-line-icons.css') }}"> 
+<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block title %}FaceVault{% endblock %}
 
-{% block navbar %}{{ super() }}{% endblock %}
+{% block navbar %}
+    <nav class="navbar navbar-light bg-light static-top">
+        <div class="container">
+            <a class="btn btn-primary" href="signIn">Sign In</a>
+            <a class="btn btn-primary" href="signUp">Sign Up</a>
+        </div>
+    </nav>
+{% endblock %}
 
 {% block content %}
+    <!-- Masthead -->
+    <header class="masthead text-white text-center">
+        <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-9 mx-auto">
+                        <h1 class="mb-5">Secure your documents with the thing that makes you unique - your face!</h1>
+                    </div>
+            </div>
+        </div>
+    </header>
 
+    <!-- Icons Grid -->
+    <section class="features-icons bg-light text-center">
+        <div class="container">
+            <h2>How does it work?</h2>
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                        <div class="features-icons-icon d-flex">
+                            <i class="icon-screen-desktop m-auto text-primary"></i>
+                        </div>
+                        <h3>Create an Account</h3>
+                        <p class="lead mb-0">When you sign up, you will be asked to take a few pictures of yourself. This will act as your "password."</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
+                        <div class="features-icons-icon d-flex">
+                            <i class="icon-layers m-auto text-primary"></i>
+                        </div>
+                        <h3>On Our End</h3>
+                        <p class="lead mb-0">Everytime you log in, you will be requiered to take a new picture of yourself. This picture will be disgarded after our AI verfies your identity!</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="features-icons-item mx-auto mb-0 mb-lg-3">
+                        <div class="features-icons-icon d-flex">
+                            <i class="icon-check m-auto text-primary"></i>
+                        </div>
+                        <h3>Uplaod your Documents</h3>
+                        <p class="lead mb-0">All uploaded documents are saved in our database so that you can access them anytime, safely and securely!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %} <!--end content-->

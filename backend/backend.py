@@ -1,6 +1,7 @@
 from flask import Flask, render_template, json, request
 from bson import json_util
 import sqlite3 as sql
+from PIL import Image
 app = Flask(__name__)
 
 class Response:
@@ -46,19 +47,34 @@ def hello_world():
 def signUp():
   if request.method == 'POST':
     document = request.form.to_dict()
+    image = request.files['image']
+    blob = image.read()
+    print(image.filename)
+    print(blob)
+    #fileTest = request.files['image']
+    # Read the image via file.stream
+    #img = Image.open(fileTest.stream)
 
     # Setting up connection to DB
     with sql.connect("vault.db") as con:
       cur = con.cursor()
 
-      cur.execute("INSERT INTO User (Email, Password) VALUES (?,?)", (document['email'], document['password']))
+      cur.execute("INSERT INTO User (FullName, Email, FaceRef) VALUES (?,?,?)", (document['name'], document['email'], blob))
 
 
-  return Response(200, document['email'] + " " + document['password']).serialize()
+
+  return Response(200, ["image uploaded successfully to the database!", document['name'], document['email'], blob]).serialize()
   
-@app.route('/signIn', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def signIn():
-  return Response(200, "TODO")
+  if request.method == 'POST':
+    image = request.form.to_dict()
+    #at this point we need to do TWO THINGS
+    #1. ensure we are passing over the image from the frontend and not just the file name (Orlando)
+    #2. pull from the db and check the images against each other using the format of the example in newFace.py
+    return Response(200, image).serialize()
+  else:
+    return Response(200, "not allowed").serialize()
   
 
 if __name__ == '__main__':

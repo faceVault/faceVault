@@ -14,20 +14,20 @@
     <!-- Main CSS-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.min.css') }}"> 
 {% endblock %}
-{% block title %}Sign Up{% endblock %}
 
-{% block navbar %}<!--no links for singup-->{% endblock %}
+{% block navbar %}<!--no links for singin-->{% endblock %}
 
 {% block content %}
     <div class="page-wrapper bg-gra-03 p-t-45 p-b-50">
     <div class="wrapper wrapper--w790">
         <div class="card card-5">
             <div class="card-heading">
-                <h2 class="title">FaceVault Sign Up</h2>
+                <h2 class="title">FaceVault Sign In</h2>
             </div>
 
             <div class="card-body">
-                <form action="http://localhost:5000/signUp" method="post" enctype="multipart/form-data">
+                <form action="http://localhost:5000/login" method="post" enctype="multipart/form-data">
+                    
                     <div class="form-row m-b-55">
                         <div class="name">Username</div>
                         <div class="value">
@@ -41,21 +41,14 @@
                             </div>
                         </div>
                     </div>
-            
-                    <div class="form-row">
-                        <div class="name">Email</div>
-                        <div class="value">
-                            <div class="input-group">
-                                <input class="input--style-5" type="email" name="email">
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="form-row">
-                        <div class="name">Take a Picture</div>
+                        <div class="name">Take a picture</div>
+                        <br></br>
                         <div class="value">
                             <div class="input-group">
-                                <input class="input--style-5" type="file" id="image" name="image" accept="image/*">
+                                <input class="input--style-5" type="file" id="image" name="image" accept="image/*" >
+                                
                             </div>
                         </div>
                     </div>
@@ -91,7 +84,7 @@
                     </div>
                     
                     <div>
-                        <button class="btn btn--radius-2 btn--red" type="submit">Register!</button>
+                        <button class="btn btn--radius-2 btn--red" type="submit">Sign In!</button>
                     </div>
                 </form>
             </div>

@@ -2,6 +2,10 @@ from flask import Flask, render_template, json, request
 from bson import json_util
 import sqlite3 as sql
 from PIL import Image
+import face_recognition
+import io
+import base64
+
 app = Flask(__name__)
 
 class Response:
@@ -45,34 +49,96 @@ def hello_world():
 
 @app.route('/signUp', methods=['GET', 'POST'])
 def signUp():
+  #make sure user email isnt already in use
+  #make sure username isnt is already in use 
+  #IF WE HAVE TIME MAKE SURE THERES A FACE IN THE PICTURE
   if request.method == 'POST':
     document = request.form.to_dict()
-    image = request.files['image']
-    blob = image.read()
-    print(image.filename)
-    print(blob)
-    #fileTest = request.files['image']
-    # Read the image via file.stream
-    #img = Image.open(fileTest.stream)
 
-    # Setting up connection to DB
     with sql.connect("vault.db") as con:
       cur = con.cursor()
+      cur.execute('SELECT * FROM User WHERE EXISTS (SELECT * FROM User WHERE Username = "' + document['username'] + '" OR Email = "' + document['email'] + '"' + ')' )
+    result = cur.fetchall()
 
-      cur.execute("INSERT INTO User (FullName, Email, FaceRef) VALUES (?,?,?)", (document['name'], document['email'], blob))
+    
+    if(len(result) == 0):
+      image = request.files['image']
+      blob = image.read()
+    
+      with sql.connect("vault.db") as con:
+        cur = con.cursor()
+        cur.execute("INSERT INTO User (Username, Email, FaceRef, Security1, Security2, Security3) VALUES (?,?,?,?,?,?)", (document['username'], document['email'], blob, document['sec1'], document['sec2'], document['sec3']))
+      
+      return Response(200, ["image uploaded successfully to the database!", document['username'], document['email'], document['sec1'], document['sec2'], document['sec3']]).serialize()
+    else: 
+      return Response(200, "A user with that email or username already exists!").serialize()
 
 
 
-  return Response(200, ["image uploaded successfully to the database!", document['name'], document['email'], blob]).serialize()
+    
   
+
 @app.route('/login', methods=['GET', 'POST'])
 def signIn():
+  error = False
+
   if request.method == 'POST':
-    image = request.form.to_dict()
+    document = request.form.to_dict()
     #at this point we need to do TWO THINGS
     #1. ensure we are passing over the image from the frontend and not just the file name (Orlando)
     #2. pull from the db and check the images against each other using the format of the example in newFace.py
-    return Response(200, image).serialize()
+    
+    with sql.connect("vault.db") as con:
+      cur = con.cursor()
+      cur.execute('SELECT FaceRef, Security1, Security2, Security3 FROM User WHERE Username = "' + document['username'] + '"')
+    result = cur.fetchall()
+    
+    #print(result)
+    if len(result) > 0: 
+      #0 is the blob, 1 is security question one, 2 is security question two, 3 is security question three
+      #4 is security question 3
+      imageSource = result[0][0]
+      sec1 = result[0][1]
+      sec2 = result[0][2]
+      sec3 = result[0][3]
+      
+      if (document['sec1'] != sec1) or (document['sec2'] != sec2) or (document['sec3'] != sec3):
+        error = True
+      
+      if error is False:
+        #look into image compressing 
+        image = request.files['image']
+        blob = image.read()
+        
+        img = Image.open(image.stream)
+        img.save("submitted.jpg")
+        
+        with open('database.jpg', 'wb') as f:
+          f.write(imageSource)
+        
+        loginImage = face_recognition.load_image_file("submitted.jpg")
+        unknown_encoding = face_recognition.face_encodings(loginImage)[0]
+
+        dbImage = face_recognition.load_image_file("database.jpg")
+        known_encoding = face_recognition.face_encodings(dbImage)[0]
+
+        results = face_recognition.compare_faces([known_encoding], unknown_encoding)
+        results = results[0]
+
+        if results == True:
+          msg = "Weclome, " + document['username'] + "!"
+        else:
+          msg = "Access Denied: You are not " + document['username'] + "."
+        
+        return Response(200, msg).serialize()
+        
+      else:  
+        return Response(200, "You answered a security question wrong.").serialize()
+    
+    else:
+      error = True
+    return Response(200, "User not found in database").serialize()
+    
   else:
     return Response(200, "not allowed").serialize()
   

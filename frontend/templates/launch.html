@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+
 <!--landing page that redirects for signup or login-->
 {% block style %}        
 <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}"> 
@@ -14,7 +14,7 @@
 {% block navbar %}
     <nav class="navbar navbar-light bg-light static-top">
         <div class="container">
-            <a class="btn btn-primary" href="signIn">Sign In</a>
+            <a class="btn btn-primary" href="login">Sign In</a>
             <a class="btn btn-primary" href="signUp">Sign Up</a>
         </div>
     </nav>
@@ -61,7 +61,7 @@
                         <div class="features-icons-icon d-flex">
                             <i class="icon-check m-auto text-primary"></i>
                         </div>
-                        <h3>Uplaod your Documents</h3>
+                        <h3>Upload your Documents</h3>
                         <p class="lead mb-0">All uploaded documents are saved in our database so that you can access them anytime, safely and securely!</p>
                     </div>
                 </div>

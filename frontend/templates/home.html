@@ -21,6 +21,19 @@
         </div>
     {% endblock %}
 
-    <div id="content">{% block content %}{% endblock %}</div><!--end content-->
+    <div id="content">
+        {% block content %}
+            <h1>Welcome, {{value[0][1]}}</h1>
+            <br>
+            <h2>Files:</h2>
+            <ul>
+            {% for row in value %}
+            
+                <li>{{ row[2] }}</li>
+            
+            {% endfor %}
+        </ul>
+        {% endblock %}
+    </div><!--end content-->
 </body>
 </html>

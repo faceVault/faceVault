@@ -194,6 +194,9 @@ def pull_files():
       cur = con.cursor()
       cur.execute("SELECT * FROM Files WHERE Owner= ?", (username,))
       res = cur.fetchall()
+
+      #for row in res:
+        #print(row[2])
             
       return Response(200, res).serialize()
   else:

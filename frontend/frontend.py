@@ -1,7 +1,8 @@
-from flask import Flask, render_template, json, request, redirect
+from flask import Flask, render_template, json, request, redirect, send_file
 from bson import json_util
 from flask_bootstrap import Bootstrap
 import requests
+from io import BytesIO
 app = Flask(__name__)
 
 class Response:
@@ -71,9 +72,16 @@ def home():
   if(res['data'] == "True"):
     x = requests.get('http://localhost:5000/pullFiles')
     res = x.json()
+    for row in res['data']:
+      
+      print(row[3])
     
-    return Response(200, res['data']).serialize()
-    #return render_template('home.html')
+    #with open('test.jpg', 'wb') as f:
+      #f.write(str(res['data'][0][3]))
+    #print(row[0][3])
+
+    #return Response(200, res['data'][0][3]).serialize()
+    return send_file(BytesIO(str(res['data'][0][3]).encode()), attachment_filename=str(res['data'][0][2]), as_attachment=True)#render_template('home.html', value=res['data'])
   else:
     return redirect("http://localhost:3000/")
 

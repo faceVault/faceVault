@@ -147,8 +147,8 @@ def signIn():
           msg = "Weclome, " + document['username'] + "!"
           isLoggedIn = True
           username = document['username']
-          return Response(200, imageSource).serialize()
-          #return redirect("http://localhost:3000/home")
+          
+          return redirect("http://localhost:3000/home")
         else:
           msg = "Access Denied: You are not " + document['username'] + "."
           return Response(200, msg).serialize()
@@ -196,10 +196,13 @@ def pull_files():
       cur.execute("SELECT * FROM Files WHERE Owner= ?", (username,))
       res = cur.fetchall()
 
+      finalRes = []
+      finalRes.append(username)
+      finalRes.append(res)
       #for row in res:
         #print(row[2])
             
-      return Response(200, res).serialize()
+      return Response(200, finalRes).serialize()
   else:
     return redirect("http://localhost:3000/")
 

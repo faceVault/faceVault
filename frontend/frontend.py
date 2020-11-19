@@ -76,14 +76,9 @@ def home():
   if(res['data'] == "True"):
     x = requests.get('http://localhost:5000/pullFiles')
     res = x.json()
-    if(len(res['data']) == 0):
-      res = [['there are no files']]
-      imageSource = res
-    else:
-      imageSource = res['data'][0][3]['$binary']
       
-    #return redirect("http://localhost:3000/upload")
-    return send_file(BytesIO(base64.b64decode(imageSource)), attachment_filename=str(res['data'][0][2]), as_attachment=True)#render_template('home.html', value=res['data'])
+    return render_template('home.html', value=res['data'])
+    #return send_file(BytesIO(base64.b64decode(imageSource)), attachment_filename=str(res['data'][0][2]), as_attachment=True)#render_template('home.html', value=res['data'])
   else:
     return redirect("http://localhost:3000/")
 
@@ -98,6 +93,10 @@ def upload():
     return redirect("http://localhost:3000/")
   
 
+@app.route('/downloadFile', methods=['POST'])
+def downloadFile():
+  document = request.form.to_dict()
+  return send_file(BytesIO(base64.b64decode(document['binary'])), attachment_filename=document['filename'], as_attachment=True)
 
 if __name__ == '__main__':
   app.run(host="localhost", port=3000, debug=True)

@@ -23,16 +23,42 @@
 
     <div id="content">
         {% block content %}
-            <h1>Welcome, {{value[0][1]}}</h1>
+
+        <h1>Welcome, {{value[0]}}</h1>
+        {% if value[1]|length > 0 %}
+            
             <br>
             <h2>Files:</h2>
             <ul>
-            {% for row in value %}
+                {% for row in value[1] %}
+                    {% set binaryFile = row[3]['$binary'] %}
+                    <li>{{row[2]}} 
+                        
+                        <form action="http://localhost:5000/deleteFile" method="post">
+                            <button type="submit">delete</button> 
+                            <input type="hidden" id="owner" name="owner" value={{value[0]}}>
+                            <input type="hidden" id="fileToDelete" name="fileToDelete" value={{row[2]}}>
+                        </form>
+                        
+                        <form action="/downloadFile" method="post">
+                            <button type="submit">download</button> 
+                            <input type="hidden" id="owner" name="owner" value={{value[0]}}>
+                            <input type="hidden" id="filename" name="filename" value={{row[2]}}>
+                            <input type="hidden" id="binary" name="binary" value={{binaryFile}}>
+                        </form>
+                        
+                    </li>
+                    
+                {% endfor %}
+            </ul>
+
+         {% else %}
+
+         <h2>There are no files currently stored!</h2>
+       
+        {% endif %}
+
             
-                <li>{{ row[2] }}</li>
-            
-            {% endfor %}
-        </ul>
         {% endblock %}
     </div><!--end content-->
 </body>

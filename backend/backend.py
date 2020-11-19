@@ -1,10 +1,13 @@
-from flask import Flask, render_template, json, request
+from flask import Flask, render_template, json, request, redirect
 from bson import json_util
 import sqlite3 as sql
 from PIL import Image
 import face_recognition
 import io
 import base64
+
+username = ""
+isLoggedIn = False
 
 app = Flask(__name__)
 
@@ -47,8 +50,21 @@ def getResponseData(code):
 def hello_world():
   return Response(200, "hello, world!").serialize()
 
+@app.route('/isLoggedIn')
+def isIn():
+  global isLoggedIn
+  return Response(200, str(isLoggedIn)).serialize()
+
+@app.route('/logout')
+def logout():
+  global isLoggedIn
+  isLoggedIn = False
+  return redirect("http://localhost:3000/")
+
 @app.route('/signUp', methods=['GET', 'POST'])
 def signUp():
+  global isLoggedIn
+  global username
   #make sure user email isnt already in use
   #make sure username isnt is already in use 
   #IF WE HAVE TIME MAKE SURE THERES A FACE IN THE PICTURE
@@ -69,17 +85,19 @@ def signUp():
         cur = con.cursor()
         cur.execute("INSERT INTO User (Username, Email, FaceRef, Security1, Security2, Security3) VALUES (?,?,?,?,?,?)", (document['username'], document['email'], blob, document['sec1'], document['sec2'], document['sec3']))
       
-      return Response(200, ["image uploaded successfully to the database!", document['username'], document['email'], document['sec1'], document['sec2'], document['sec3']]).serialize()
+      isLoggedIn = True
+      username = document['username']
+
+      return redirect("http://localhost:3000/home")
+      #return Response(200, ["image uploaded successfully to the database!", document['username'], document['email'], document['sec1'], document['sec2'], document['sec3']]).serialize()
     else: 
       return Response(200, "A user with that email or username already exists!").serialize()
 
 
-
-    
-  
-
 @app.route('/login', methods=['GET', 'POST'])
 def signIn():
+  global isLoggedIn
+  global username
   error = False
 
   if request.method == 'POST':
@@ -127,10 +145,12 @@ def signIn():
 
         if results == True:
           msg = "Weclome, " + document['username'] + "!"
+          isLoggedIn = True
+          username = document['username']
+          return redirect("http://localhost:3000/home")
         else:
           msg = "Access Denied: You are not " + document['username'] + "."
-        
-        return Response(200, msg).serialize()
+          return Response(200, msg).serialize()
         
       else:  
         return Response(200, "You answered a security question wrong.").serialize()
@@ -141,6 +161,44 @@ def signIn():
     
   else:
     return Response(200, "not allowed").serialize()
+
+@app.route('/uploadFiles', methods=['GET', 'POST'])
+def upload_files():
+  global isLoggedIn
+  global username
+  if request.method == 'POST': 
+    #inserts new files into database
+    if isLoggedIn == True:
+      for uploaded_file in request.files.getlist('files'):
+        if uploaded_file.filename != '':
+            print("file here")
+            nameOfFile = uploaded_file.filename
+            blob = uploaded_file.read()
+            print(blob)
+            with sql.connect("vault.db") as con:
+              cur = con.cursor()
+              cur.execute("INSERT INTO Files (Owner, FileName, File) VALUES (?,?, ?)", (username, nameOfFile, blob))
+      return redirect("http://localhost:3000/home")
+    else:
+      return redirect("http://localhost:3000/")
+  
+@app.route('/pullFiles', methods=['GET', 'POST'])
+def pull_files():
+  global isLoggedIn
+  global username
+  #if request.method == 'POST': 
+  res = []
+  #inserts new files into database
+  if isLoggedIn == True:
+    with sql.connect("vault.db") as con:
+      cur = con.cursor()
+      cur.execute("SELECT * FROM Files WHERE Owner= ?", (username,))
+      res = cur.fetchall()
+            
+      return Response(200, res).serialize()
+  else:
+    return redirect("http://localhost:3000/")
+
   
 
 if __name__ == '__main__':

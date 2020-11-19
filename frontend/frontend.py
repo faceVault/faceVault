@@ -1,6 +1,7 @@
-from flask import Flask, render_template, json, request
+from flask import Flask, render_template, json, request, redirect
 from bson import json_util
 from flask_bootstrap import Bootstrap
+import requests
 app = Flask(__name__)
 
 class Response:
@@ -37,25 +38,55 @@ def getResponseData(code):
     # Return the code's corresponding dict
     return possibleCodes.get(code, errObj)
 
+def checkLogin(template):
+  #checks to see if user
+  x = requests.get('http://localhost:5000/isLoggedIn')
+  res = x.json()
+  
+  if(res['data'] == "True"):
+    print("logged in")
+    return redirect("http://localhost:3000/home")
+  else:
+    return render_template(template)
+
 @app.route('/')
 def launch():
-  return render_template('launch.html')
+  #checks to see if user
+  return checkLogin('launch.html')
+  
 
 @app.route('/signUp')
 def signUp():
-  return render_template('signUp.html')
+  return checkLogin('signUp.html')
 
 @app.route('/login')
 def login():
-  return render_template('login.html')
+  return checkLogin('login.html')
 
 @app.route('/home')
 def home():
-  return render_template('home.html')
+  x = requests.get('http://localhost:5000/isLoggedIn')
+  res = x.json()
+  
+  if(res['data'] == "True"):
+    x = requests.get('http://localhost:5000/pullFiles')
+    res = x.json()
+    
+    return Response(200, res['data']).serialize()
+    #return render_template('home.html')
+  else:
+    return redirect("http://localhost:3000/")
 
 @app.route('/upload')
 def upload():
-  return render_template('upload.html')
+  x = requests.get('http://localhost:5000/isLoggedIn')
+  res = x.json()
+  
+  if(res['data'] == "True"):
+    return render_template('upload.html')
+  else:
+    return redirect("http://localhost:3000/")
+  
 
 
 if __name__ == '__main__':

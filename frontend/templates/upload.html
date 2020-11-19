@@ -1,9 +1,47 @@
 
-{% block style %}{{ super() }}{% endblock %}
-{% block title %}Upload{% endblock %}
+{% block style %}
+<!-- Icons font CSS-->
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/mdi-font/css/material-design-iconic-font.min.css') }}"> 
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/font-awesome-4.7/css/font-awesome.min.css') }}">
 
-{% block navbar %}{{ super() }}{% endblock %}
+<!-- Font special for pages-->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+
+<!-- Vendor CSS-->
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/select2/select2.min.css') }}"> 
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/datepicker/daterangepicker.css') }}">
+
+<!-- Main CSS-->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/signup.min.css') }}"> 
+{% endblock %}
+
+{% block navbar %}<!--no links for singin-->{% endblock %}
 
 {% block content %}
+<div class="page-wrapper bg-gra-03 p-t-45 p-b-50">
+<div class="wrapper wrapper--w790">
+    <div class="card card-5">
+        <div class="card-heading">
+            <h2 class="title">Upload a file</h2>
+        </div>
 
+        <div class="card-body">
+            <form action="http://localhost:5000/uploadFiles" method="post" enctype="multipart/form-data">
+              <div class="form-row">
+                  <div class="name">Select files:</div>
+                  <div class="value">
+                      <div class="input-group">
+                          <input class="input--style-5" type="file" id="files" name="files" multiple>
+                      </div>
+                  </div>
+              </div>
+
+              <div>
+                <button class="btn btn--radius-2 btn--red" type="submit">Upload Files!</button>
+              </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
 {% endblock %} <!--end content-->

@@ -81,14 +81,9 @@ def home():
       imageSource = res
     else:
       imageSource = res['data'][0][3]['$binary']
-      #imageSource = array.array('B', list(imageSource))
-      with open('testing.jpg', 'wb') as f:
-        f.write(base64.b64decode(imageSource))
-      #app.logger.info(imageSource)
-   
-    return Response(200, imageSource).serialize()
+      
     #return redirect("http://localhost:3000/upload")
-    #return send_file(StringIO(res['data'][1][3]['$binary']), attachment_filename=str(res['data'][1][2]), as_attachment=True)#render_template('home.html', value=res['data'])
+    return send_file(BytesIO(base64.b64decode(imageSource)), attachment_filename=str(res['data'][0][2]), as_attachment=True)#render_template('home.html', value=res['data'])
   else:
     return redirect("http://localhost:3000/")
 

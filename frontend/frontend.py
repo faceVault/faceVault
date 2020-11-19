@@ -3,6 +3,7 @@ from bson import json_util
 from flask_bootstrap import Bootstrap
 import requests
 from io import BytesIO
+from PIL import Image
 app = Flask(__name__)
 
 class Response:
@@ -74,14 +75,18 @@ def home():
     res = x.json()
     for row in res['data']:
       
-      print(row[3])
+      print(row[2])
     
     #with open('test.jpg', 'wb') as f:
       #f.write(str(res['data'][0][3]))
     #print(row[0][3])
 
     #return Response(200, res['data'][0][3]).serialize()
-    return send_file(BytesIO(str(res['data'][0][3]).encode()), attachment_filename=str(res['data'][0][2]), as_attachment=True)#render_template('home.html', value=res['data'])
+    #img = Image.open(BytesIO(str(res['data'][1][3]).encode()))
+    #img.show()
+    print(res['data'][0][3]['$binary'])
+    #return Response(200, res['data'][0][3]['$binary']).serialize()
+    return send_file(BytesIO(res['data'][1][3]['$binary']), attachment_filename=str(res['data'][1][2]), as_attachment=True)#render_template('home.html', value=res['data'])
   else:
     return redirect("http://localhost:3000/")
 

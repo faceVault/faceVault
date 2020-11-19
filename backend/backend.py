@@ -147,7 +147,8 @@ def signIn():
           msg = "Weclome, " + document['username'] + "!"
           isLoggedIn = True
           username = document['username']
-          return redirect("http://localhost:3000/home")
+          return Response(200, imageSource).serialize()
+          #return redirect("http://localhost:3000/home")
         else:
           msg = "Access Denied: You are not " + document['username'] + "."
           return Response(200, msg).serialize()

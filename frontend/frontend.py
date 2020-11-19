@@ -2,8 +2,11 @@ from flask import Flask, render_template, json, request, redirect, send_file
 from bson import json_util
 from flask_bootstrap import Bootstrap
 import requests
-from io import BytesIO
+from io import BytesIO, StringIO
 from PIL import Image
+import base64
+import array
+
 app = Flask(__name__)
 
 class Response:
@@ -73,20 +76,19 @@ def home():
   if(res['data'] == "True"):
     x = requests.get('http://localhost:5000/pullFiles')
     res = x.json()
-    for row in res['data']:
-      
-      print(row[2])
-    
-    #with open('test.jpg', 'wb') as f:
-      #f.write(str(res['data'][0][3]))
-    #print(row[0][3])
-
-    #return Response(200, res['data'][0][3]).serialize()
-    #img = Image.open(BytesIO(str(res['data'][1][3]).encode()))
-    #img.show()
-    print(res['data'][0][3]['$binary'])
-    #return Response(200, res['data'][0][3]['$binary']).serialize()
-    return send_file(BytesIO(res['data'][1][3]['$binary']), attachment_filename=str(res['data'][1][2]), as_attachment=True)#render_template('home.html', value=res['data'])
+    if(len(res['data']) == 0):
+      res = [['there are no files']]
+      imageSource = res
+    else:
+      imageSource = res['data'][0][3]['$binary']
+      #imageSource = array.array('B', list(imageSource))
+      with open('testing.jpg', 'wb') as f:
+        f.write(base64.b64decode(imageSource))
+      #app.logger.info(imageSource)
+   
+    return Response(200, imageSource).serialize()
+    #return redirect("http://localhost:3000/upload")
+    #return send_file(StringIO(res['data'][1][3]['$binary']), attachment_filename=str(res['data'][1][2]), as_attachment=True)#render_template('home.html', value=res['data'])
   else:
     return redirect("http://localhost:3000/")
 

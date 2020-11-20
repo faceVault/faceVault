@@ -58,7 +58,28 @@ def isIn():
 @app.route('/logout')
 def logout():
   global isLoggedIn
+  global username
+
   isLoggedIn = False
+  username = ""
+
+  return redirect("http://localhost:3000/")
+
+@app.route('/deleteAccount')
+def delete_account():
+  global isLoggedIn
+  global username
+
+  with sql.connect("vault.db") as con:
+    cur = con.cursor()
+    cur.execute("DELETE FROM Files WHERE Owner = ?", (username,))
+    cur.execute("DELETE FROM User WHERE Username = ?", (username,))
+
+  isLoggedIn = False
+  username = ""
+
+
+  
   return redirect("http://localhost:3000/")
 
 @app.route('/signUp', methods=['GET', 'POST'])
@@ -206,6 +227,16 @@ def pull_files():
   else:
     return redirect("http://localhost:3000/")
 
+
+
+@app.route('/deleteFile', methods=['POST'])
+def deleteFile():
+  document = request.form.to_dict()
+
+  with sql.connect("vault.db") as con:
+    cur = con.cursor()
+    cur.execute("DELETE FROM Files WHERE Filename = ? AND Owner = ?", (document['fileToDelete'],document['owner']))
+  return redirect("http://localhost:3000/home")
   
 
 if __name__ == '__main__':

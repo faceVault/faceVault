@@ -15,9 +15,14 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.min.css') }}"> 
 {% endblock %}
 
-{% block navbar %}<!--no links for singin-->{% endblock %}
-
 {% block content %}
+{% block navbar %}
+        <div class="navbar navbar-light bg-light static-top">
+            <a href="/">Home</a>
+            <a href="http://localhost:5000/deleteAccount">Delete Account</a>
+            <a href="http://localhost:5000/logout">Logout</a>
+        </div>
+{% endblock %}
 <div class="page-wrapper bg-gra-03 p-t-45 p-b-50">
 <div class="wrapper wrapper--w790">
     <div class="card card-5">

@@ -15,8 +15,7 @@
         <div class="navbar navbar-light bg-light static-top">
             <a href="index">Home</a>
             <a href="upload">Upload Documents</a>
-            <a href="view">View Documents</a>
-            <a href="profile">Profile</a>
+            <a href="http://localhost:5000/deleteAccount">Delete Account</a>
             <a href="http://localhost:5000/logout">Logout</a>
         </div>
     {% endblock %}
@@ -25,6 +24,7 @@
         {% block content %}
 
         <h1>Welcome, {{value[0]}}</h1>
+        <!--improve -->
         {% if value[1]|length > 0 %}
             
             <br>

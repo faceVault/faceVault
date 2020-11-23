@@ -10,6 +10,63 @@
         <title>{% block title %}{% endblock %}</title>
     {% endblock %}
 </head>
+<script>
+    function search() {
+        
+      var noResults = true
+      //document.getElementById("demo").innerHTML = document.getElementById("search").value;
+      var divsToSearch = document.getElementsByClassName("searchable");
+      var liElements = document.getElementsByClassName("liSearchable")
+      var query =  document.getElementById("search").value
+       //divsToHide is an array
+        
+      for(var i = 0; i < divsToSearch.length; i++)
+      {
+          
+          //console.log(divsToSearch[i].style.display)
+        if(query == "")
+        {
+            divsToSearch[i].style.display = "block"
+        }
+        else
+        {
+            
+            if((liElements[i].innerHTML).includes(query) === true)
+            {
+                divsToSearch[i].style.display = "block"
+            }
+            else
+            {
+                divsToSearch[i].style.display = "none"
+            }
+            
+        }
+      }
+      for(var i = 0; i < divsToSearch.length; i++)
+      {
+          console.log(divsToSearch[i].style.display)
+        if((divsToSearch[i].style.display === "block") && (query !== ""))
+        {
+            noResults = false
+        }
+      }
+      if(query == "")
+      {
+          noResults = false
+          document.getElementById("filesHead").innerHTML = "Files: "
+      }
+      if(noResults === true)
+      {
+        document.getElementById("filesHead").innerHTML = "There are no files."
+        
+      }
+      else
+      {
+        document.getElementById("filesHead").innerHTML = "Files:"
+      }
+      //console.log(divsToSearch[0].innerHTML)
+    }
+    </script>
 <body>
     {% block navbar %}
         <div class="navbar navbar-light bg-light static-top">
@@ -22,32 +79,39 @@
 
     <div id="content">
         {% block content %}
-
+    
         <h1>Welcome, {{value[0]}}</h1>
         <!--improve -->
         {% if value[1]|length > 0 %}
             
             <br>
-            <h2>Files:</h2>
+            <input type="text" id="search" name="owner" onkeyup="search()" placeholder="Search through files...">
+       
+            <h2 id="filesHead">Files:</h2>
             <ul>
                 {% for row in value[1] %}
+                    {% set filename = row[2]%}
                     {% set binaryFile = row[3]['$binary'] %}
-                    <li>{{row[2]}} 
-                        
+                    <div id="{{filename}}" class="searchable">
+                        <li>
+                            <p class="liSearchable">{{filename}}</p>
+                       
                         <form action="http://localhost:5000/deleteFile" method="post">
                             <button type="submit">delete</button> 
-                            <input type="hidden" id="owner" name="owner" value={{value[0]}}>
-                            <input type="hidden" id="fileToDelete" name="fileToDelete" value={{row[2]}}>
+                            <input type="hidden" id="owner" name="owner" value="{{value[0]}}">
+                            <input type="hidden" id="fileToDelete" name="fileToDelete" value="{{filename}}">
                         </form>
                         
                         <form action="/downloadFile" method="post">
                             <button type="submit">download</button> 
-                            <input type="hidden" id="owner" name="owner" value={{value[0]}}>
-                            <input type="hidden" id="filename" name="filename" value={{row[2]}}>
-                            <input type="hidden" id="binary" name="binary" value={{binaryFile}}>
+                            <input type="hidden" id="owner" name="owner" value="{{value[0]}}">
+                            <input type="hidden" type="text" id="filename" name="filename" value="{{filename}}">
+                            <input type="hidden" id="binary" name="binary" value="{{binaryFile}}">
                         </form>
+                    
                         
                     </li>
+                </div>
                     
                 {% endfor %}
             </ul>

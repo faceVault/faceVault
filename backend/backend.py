@@ -5,6 +5,7 @@ from PIL import Image
 import face_recognition
 import io
 import base64
+import os
 
 username = ""
 isLoggedIn = False
@@ -77,9 +78,6 @@ def delete_account():
 
   isLoggedIn = False
   username = ""
-
-
-  
   return redirect("http://localhost:3000/")
 
 @app.route('/signUp', methods=['GET', 'POST'])
@@ -163,6 +161,9 @@ def signIn():
 
         results = face_recognition.compare_faces([known_encoding], unknown_encoding)
         results = results[0]
+
+        os.remove("database.jpg")
+        os.remove("submitted.jpg")
 
         if results == True:
           msg = "Weclome, " + document['username'] + "!"

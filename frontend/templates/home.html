@@ -6,15 +6,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block style %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/litera.min.css') }}"> 
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.min.css') }}"> 
     {% endblock %}
         <title>{% block title %}{% endblock %}</title>
     {% endblock %}
 </head>
 <script>
     function search() {
-        
+      //fucntion that uses dom object manipulation and css to enable the functionality of a search bar
       var noResults = true
-      //document.getElementById("demo").innerHTML = document.getElementById("search").value;
       var divsToSearch = document.getElementsByClassName("searchable");
       var liElements = document.getElementsByClassName("liSearchable")
       var query =  document.getElementById("search").value
@@ -22,15 +22,13 @@
         
       for(var i = 0; i < divsToSearch.length; i++)
       {
-          
-          //console.log(divsToSearch[i].style.display)
+        //console.log(divsToSearch[i].style.display)
         if(query == "")
         {
             divsToSearch[i].style.display = "block"
         }
         else
         {
-            
             if((liElements[i].innerHTML).includes(query) === true)
             {
                 divsToSearch[i].style.display = "block"
@@ -39,12 +37,10 @@
             {
                 divsToSearch[i].style.display = "none"
             }
-            
         }
       }
       for(var i = 0; i < divsToSearch.length; i++)
       {
-          console.log(divsToSearch[i].style.display)
         if((divsToSearch[i].style.display === "block") && (query !== ""))
         {
             noResults = false
@@ -62,68 +58,89 @@
       }
       else
       {
-        document.getElementById("filesHead").innerHTML = "Files:"
+        document.getElementById("filesHead").innerHTML = "Files: "
       }
-      //console.log(divsToSearch[0].innerHTML)
     }
     </script>
+    
 <body>
     {% block navbar %}
         <div class="navbar navbar-light bg-light static-top">
-            <a href="index">Home</a>
+            <a href="home">Home</a>
             <a href="upload">Upload Documents</a>
             <a href="http://localhost:5000/deleteAccount">Delete Account</a>
             <a href="http://localhost:5000/logout">Logout</a>
         </div>
     {% endblock %}
 
-    <div id="content">
-        {% block content %}
-    
-        <h1>Welcome, {{value[0]}}</h1>
-        <!--improve -->
+    <div id="content"> 
+    {% block content %}
+    <div class="page-wrapper bg-gra-03 p-t-45 p-b-50">
+    <div class="wrapper wrapper--w790">
+    <div class="card card-5">
+    <div class="card-heading">   
+        <h1 class="title">Welcome, {{value[0]}}</h1>
+        </div>
+
+        <div class="card-body"> 
+        <!--checks to make sure there are files stored.-->
         {% if value[1]|length > 0 %}
-            
-            <br>
-            <input type="text" id="search" name="owner" onkeyup="search()" placeholder="Search through files...">
-       
-            <h2 id="filesHead">Files:</h2>
-            <ul>
-                {% for row in value[1] %}
-                    {% set filename = row[2]%}
-                    {% set binaryFile = row[3]['$binary'] %}
-                    <div id="{{filename}}" class="searchable">
-                        <li>
-                            <p class="liSearchable">{{filename}}</p>
-                       
-                        <form action="http://localhost:5000/deleteFile" method="post">
-                            <button type="submit">delete</button> 
-                            <input type="hidden" id="owner" name="owner" value="{{value[0]}}">
-                            <input type="hidden" id="fileToDelete" name="fileToDelete" value="{{filename}}">
-                        </form>
-                        
-                        <form action="/downloadFile" method="post">
-                            <button type="submit">download</button> 
-                            <input type="hidden" id="owner" name="owner" value="{{value[0]}}">
-                            <input type="hidden" type="text" id="filename" name="filename" value="{{filename}}">
-                            <input type="hidden" id="binary" name="binary" value="{{binaryFile}}">
-                        </form>
-                    
-                        
-                    </li>
+        <br>
+    
+        <div class="form-row2">
+            <div class="value">
+                
+                <div class="input-group">
+                    <input class="input--style-6"  type="text" id="search" name="owner" onkeyup="search()" placeholder="Search through files...">
                 </div>
+            </div>
+        </div>
+        <span>
+        <h2 id="filesHead">Files:</h2>
+        <ul>
+            <!--iterates through files and sets its unique attributes based on the respoonse sent from the frontend endpoint that connects to the backend-->
+            {% for row in value[1] %}
+                {% set filename = row[2]%}
+                {% set binaryFile = row[3]['$binary'] %}
+                <div id="{{filename}}" class="searchable">
+                    <li>
+                        <p class="liSearchable">{{filename}}</p>
+                   
+                    <form action="http://localhost:5000/deleteFile" method="post">
+                        <button type="submit" class="btn2 btn--radius-2 btn--red">delete</button> 
+                        <!--hidden input that is sent as form data to the backend to use to know which file to delete-->
+                        <input type="hidden" id="owner" name="owner" value="{{value[0]}}">
+                        <input type="hidden" id="fileToDelete" name="fileToDelete" value="{{filename}}">
+                    </form>
                     
-                {% endfor %}
-            </ul>
+                    <form action="/downloadFile" method="post">
+                        <button type="submit" class="btn2 btn--radius-2 btn--red">download</button>
+                        <!--hidden binary data and filename that is sent to the frontend /download enpoint --> 
+                        <input type="hidden" id="owner" name="owner" value="{{value[0]}}">
+                        <input type="hidden" type="text" id="filename" name="filename" value="{{filename}}">
+                        <input type="hidden" id="binary" name="binary" value="{{binaryFile}}">
+                    </form>    
+                </li>
+            </div>
+                
+            {% endfor %}
+        </ul>
+    </span>
+    <!--loads if there are no files-->
+     {% else %}
 
-         {% else %}
+     <h2>There are no files currently stored!</h2>
+   
+    {% endif %}
 
-         <h2>There are no files currently stored!</h2>
-       
-        {% endif %}
+        
+    {% endblock %}
+                             
+        </div>
+        </div>
+        </div>
+        </div>
 
-            
-        {% endblock %}
     </div><!--end content-->
 </body>
 </html>

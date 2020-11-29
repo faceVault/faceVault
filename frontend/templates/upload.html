@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
 
 <!-- Vendor CSS-->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/litera.min.css') }}"> 
 <link rel="stylesheet" href="{{ url_for('static', filename='vendor/select2/select2.min.css') }}"> 
 <link rel="stylesheet" href="{{ url_for('static', filename='vendor/datepicker/daterangepicker.css') }}">
 
@@ -19,6 +20,7 @@
 {% block navbar %}
         <div class="navbar navbar-light bg-light static-top">
             <a href="/">Home</a>
+            <a href="upload">Upload Documents</a>
             <a href="http://localhost:5000/deleteAccount">Delete Account</a>
             <a href="http://localhost:5000/logout">Logout</a>
         </div>

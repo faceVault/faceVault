@@ -13,6 +13,11 @@
 
     <!-- Main CSS-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.min.css') }}"> 
+    <style>
+        button {
+            background-color: red !important;
+        }
+    </style>
 {% endblock %}
 
 {% block navbar %}<!--no links for singup-->{% endblock %}
@@ -33,10 +38,9 @@
                             <div class="row row-space">
                                 <div class="col-2">
                                     <div class="input-group-desc">
-                                        <input class="input--style-5" type="text" name="username">
+                                        <input required class="input--style-5" type="text" name="username">
                                     </div>
                                 </div>
-                                
                             </div>
                         </div>
                     </div>
@@ -45,7 +49,7 @@
                         <div class="name">Email</div>
                         <div class="value">
                             <div class="input-group">
-                                <input class="input--style-5" type="email" name="email">
+                                <input required class="input--style-5" type="email" name="email">
                             </div>
                         </div>
                     </div>
@@ -54,7 +58,7 @@
                         <div class="name">Take a Picture</div>
                         <div class="value">
                             <div class="input-group">
-                                <input class="input--style-5" type="file" id="image" name="image" accept="image/*">
+                                <input required class="input--style-5" type="file" id="image" name="image" accept="image/*">
                             </div>
                         </div>
                     </div>
@@ -63,7 +67,7 @@
                         <div class="name">Security Question #1</div>
                         <div class="value">
                             <div class="input-group">
-                                <input class="input--style-5" type="text" name="sec1">
+                                <input required class="input--style-5" type="text" name="sec1">
                                 <label class="label--desc">What's your favorite movie?</label>
                             </div>
                         </div>
@@ -73,7 +77,7 @@
                         <div class="name">Security Question #2</div>
                         <div class="value">
                             <div class="input-group">
-                                <input class="input--style-5" type="text" name="sec2">
+                                <input required class="input--style-5" type="text" name="sec2">
                                 <label class="label--desc">Who was your favorite professor?</label>
                             </div>
                         </div>
@@ -83,7 +87,7 @@
                         <div class="name">Security Question #3</div>
                         <div class="value">
                             <div class="input-group">
-                                <input class="input--style-5" type="text" name="sec3">
+                                <input required class="input--style-5" type="text" name="sec3">
                                 <label class="label--desc">Who was your first kiss?</label>
                             </div>
                         </div>

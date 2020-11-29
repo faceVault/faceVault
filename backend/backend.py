@@ -5,8 +5,9 @@ from PIL import Image
 import face_recognition
 import io
 import base64
-import os
+import os 
 
+#global username and isloggedin variables. used to track state of user.
 username = ""
 isLoggedIn = False
 
@@ -46,16 +47,13 @@ def getResponseData(code):
     # Return the code's corresponding dict
     return possibleCodes.get(code, errObj)
 
-
-@app.route('/')
-def hello_world():
-  return Response(200, "hello, world!").serialize()
-
+#checks if user is logged in
 @app.route('/isLoggedIn')
 def isIn():
   global isLoggedIn
   return Response(200, str(isLoggedIn)).serialize()
 
+#logs the user out by resetting global variables, locking access on the front end
 @app.route('/logout')
 def logout():
   global isLoggedIn
@@ -66,6 +64,7 @@ def logout():
 
   return redirect("http://localhost:3000/")
 
+#performs db operation to delete user from tables
 @app.route('/deleteAccount')
 def delete_account():
   global isLoggedIn
@@ -80,23 +79,26 @@ def delete_account():
   username = ""
   return redirect("http://localhost:3000/")
 
+#allows user to sign up
 @app.route('/signUp', methods=['GET', 'POST'])
 def signUp():
   global isLoggedIn
   global username
   #make sure user email isnt already in use
   #make sure username isnt is already in use 
-  #IF WE HAVE TIME MAKE SURE THERES A FACE IN THE PICTURE
   if request.method == 'POST':
     document = request.form.to_dict()
 
     with sql.connect("vault.db") as con:
       cur = con.cursor()
+      #sees if the entered email or username currently exists in the db.
+      #if it does it errors out, else it creates a new user
       cur.execute('SELECT * FROM User WHERE EXISTS (SELECT * FROM User WHERE Username = "' + document['username'] + '" OR Email = "' + document['email'] + '"' + ')' )
     result = cur.fetchall()
 
     
     if(len(result) == 0):
+      #turn image into blob type
       image = request.files['image']
       blob = image.read()
     
@@ -104,13 +106,13 @@ def signUp():
         cur = con.cursor()
         cur.execute("INSERT INTO User (Username, Email, FaceRef, Security1, Security2, Security3) VALUES (?,?,?,?,?,?)", (document['username'], document['email'], blob, document['sec1'], document['sec2'], document['sec3']))
       
+      #set login global variables
       isLoggedIn = True
       username = document['username']
 
       return redirect("http://localhost:3000/home")
-      #return Response(200, ["image uploaded successfully to the database!", document['username'], document['email'], document['sec1'], document['sec2'], document['sec3']]).serialize()
     else: 
-      return Response(200, "A user with that email or username already exists!").serialize()
+      return redirect("http://localhost:3000/error")
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -122,15 +124,16 @@ def signIn():
   if request.method == 'POST':
     document = request.form.to_dict()
     #at this point we need to do TWO THINGS
-    #1. ensure we are passing over the image from the frontend and not just the file name (Orlando)
+    #1. ensure we are passing over the image from the frontend and not just the file name
     #2. pull from the db and check the images against each other using the format of the example in newFace.py
     
+    #sees if user even exists
     with sql.connect("vault.db") as con:
       cur = con.cursor()
       cur.execute('SELECT FaceRef, Security1, Security2, Security3 FROM User WHERE Username = "' + document['username'] + '"')
     result = cur.fetchall()
     
-    #print(result)
+    #if user exists then fetch questions
     if len(result) > 0: 
       #0 is the blob, 1 is security question one, 2 is security question two, 3 is security question three
       #4 is security question 3
@@ -139,20 +142,23 @@ def signIn():
       sec2 = result[0][2]
       sec3 = result[0][3]
       
+      #if any question is answered wrong set error=true
       if (document['sec1'] != sec1) or (document['sec2'] != sec2) or (document['sec3'] != sec3):
         error = True
       
       if error is False:
-        #look into image compressing 
+        #save db blob
         image = request.files['image']
         blob = image.read()
         
+        #save form blob 
         img = Image.open(image.stream)
         img.save("submitted.jpg")
         
         with open('database.jpg', 'wb') as f:
           f.write(imageSource)
         
+        #load image files and compare encodings.
         loginImage = face_recognition.load_image_file("submitted.jpg")
         unknown_encoding = face_recognition.face_encodings(loginImage)[0]
 
@@ -162,30 +168,32 @@ def signIn():
         results = face_recognition.compare_faces([known_encoding], unknown_encoding)
         results = results[0]
 
+        #remove both temporary images from the file structure
         os.remove("database.jpg")
         os.remove("submitted.jpg")
 
+        #if it is the person in question, let them in
         if results == True:
-          msg = "Weclome, " + document['username'] + "!"
           isLoggedIn = True
           username = document['username']
           
           return redirect("http://localhost:3000/home")
         else:
-          msg = "Access Denied: You are not " + document['username'] + "."
-          return Response(200, msg).serialize()
+          #not the right user
+          return redirect("http://localhost:3000/error")
         
-      else:  
-        return Response(200, "You answered a security question wrong.").serialize()
+      else: 
+        #incorrect answers
+        return redirect("http://localhost:3000/error")
     
     else:
       error = True
-    return Response(200, "User not found in database").serialize()
+      #user not found
+    return redirect("http://localhost:3000/error")
     
-  else:
-    return Response(200, "not allowed").serialize()
+  
 
-@app.route('/uploadFiles', methods=['GET', 'POST'])
+@app.route('/uploadFiles', methods=['POST'])
 def upload_files():
   global isLoggedIn
   global username
@@ -194,10 +202,10 @@ def upload_files():
     if isLoggedIn == True:
       for uploaded_file in request.files.getlist('files'):
         if uploaded_file.filename != '':
-            print("file here")
+            #uploads new files into db by converting to blob and performing sql query
             nameOfFile = uploaded_file.filename
             blob = uploaded_file.read()
-            print(blob)
+            
             with sql.connect("vault.db") as con:
               cur = con.cursor()
               cur.execute("INSERT INTO Files (Owner, FileName, File) VALUES (?,?, ?)", (username, nameOfFile, blob))
@@ -209,9 +217,9 @@ def upload_files():
 def pull_files():
   global isLoggedIn
   global username
-  #if request.method == 'POST': 
+  
+  #pulls files from the db for a given user
   res = []
-  #inserts new files into database
   if isLoggedIn == True:
     with sql.connect("vault.db") as con:
       cur = con.cursor()
@@ -221,8 +229,6 @@ def pull_files():
       finalRes = []
       finalRes.append(username)
       finalRes.append(res)
-      #for row in res:
-        #print(row[2])
             
       return Response(200, finalRes).serialize()
   else:
@@ -232,6 +238,8 @@ def pull_files():
 
 @app.route('/deleteFile', methods=['POST'])
 def deleteFile():
+  #deletes a given file from the db by associating it by searching filename AND owner.
+  #ensures a file who belongs to another user with the same filename is not deleted
   document = request.form.to_dict()
 
   with sql.connect("vault.db") as con:

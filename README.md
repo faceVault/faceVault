@@ -4,6 +4,7 @@
   - In our project, we took a look at how we could make cloud based storage services a little bit more secure for the user. First, we created a sign up/login schema where instead of a password, the user was asked to upload a picture of themselves along with three security questions. Then, we created a web application that let users securely upload their documents into a database. It also let users see all their current files and either delete, download, or search through them.
 ∗ Any details regarding instructions for the user interface that is beyond the obvious.
   - One assumption we made is that users will upload photos that only have their face in it and not others. Besides that, all bases have been covered so that malicious users can't access our database, users can see ONLY their files, etc. 
+  
 ∗ A list of Python libraries you are using.
   - We use the folllowing libraries
     - Flask
@@ -19,6 +20,7 @@
       allowed us to work with binary strings and bytes to properly display images
     - face_recognition
       allowed us to compare the faces submitted with the login form against the face stored in the database
+      
 ∗ A list of other resources.
 ∗ Descriptions of any extra features implemented (beyond the project proposal).
   - We implemented the following extra features.
@@ -28,6 +30,7 @@
     4. Download file (passes binary data from the database to the backend to the frontend in order to allow the user to download a file)
     5. Error page (alerts the user if there was an error during sign up/login and redirects them to the home page once they've read the message)
     6. Login checks (allows user to access the upload files, delete account, and home endpoints IF AND ONLY IF they are logged in. If they aren't it redirects them to the home page.)
+    
 ∗ Include a description of the separation of work (who was responsible for what pieces
 of the program).
   - Division of Labor

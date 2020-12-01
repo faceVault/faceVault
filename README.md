@@ -20,6 +20,8 @@
       allowed us to work with binary strings and bytes to properly display images
     - face_recognition
       allowed us to compare the faces submitted with the login form against the face stored in the database
+    - bootstrap
+      alllowed us to quickly apply css templates that worked with flask 
       
 ∗ A list of other resources.
 ∗ Descriptions of any extra features implemented (beyond the project proposal).

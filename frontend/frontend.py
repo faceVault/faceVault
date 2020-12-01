@@ -101,7 +101,6 @@ def upload():
 @app.route('/downloadFile', methods=['POST'])
 def downloadFile():
   document = request.form.to_dict()
-  print(document['filename'])
   return send_file(BytesIO(base64.b64decode(document['binary'])), attachment_filename=document['filename'], as_attachment=True)
 
 #error page if sign up/login information is wrong
